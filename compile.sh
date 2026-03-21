@@ -1,3 +1,12 @@
-/usr/bin/glslc resources/shaders/simple_shader.vert -o resources/shaders/simple_shader.vert.spv
-/usr/bin/glslc resources/shaders/simple_shader.frag -o resources/shaders/simple_shader.frag.spv
+#!/bin/bash
+
+INPUT="$1"
+
+if [ -z "$INPUT" ]; then
+	echo "Usage: $0 <shader file>"
+fi
+
+OUTPUT="${INPUT}".spv
+
+/usr/bin/glslc "$INPUT" -o "$OUTPUT"
 

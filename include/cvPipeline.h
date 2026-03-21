@@ -26,7 +26,7 @@ public:
   ~cvPipeline();
 
   cvPipeline(const cvPipeline &) = delete;
-  void operator=(const cvPipeline &) = delete;
+  cvPipeline &operator=(const cvPipeline &) = delete;
 
   void bind(VkCommandBuffer commandBuffer);
 
