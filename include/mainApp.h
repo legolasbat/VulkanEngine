@@ -30,6 +30,9 @@ private:
   void createCommandBuffers();
   void drawFrame();
 
+  void sierpinski(std::vector<cvModel::Vertex> &vertices, int depth,
+                  glm::vec2 left, glm::vec2 right, glm::vec2 top);
+
   cvWindow window{WIDTH, HEIGHT, "Main App"};
   cvDevice device{window};
   cvSwapChain swapChain{device, window.getExtent()};
