@@ -6,6 +6,7 @@
 namespace CV {
 
 mainApp::mainApp() {
+  loadModels();
   createPipelineLayout();
   createPipeline();
   createCommandBuffers();
@@ -22,6 +23,12 @@ void mainApp::run() {
   }
 
   vkDeviceWaitIdle(device.device());
+}
+void mainApp::loadModels() {
+  std::vector<cvModel::Vertex> vertices{
+      {{0.0f, -0.5}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}}};
+
+  model = std::make_unique<cvModel>(device, vertices);
 }
 
 void mainApp::createPipelineLayout() {
@@ -87,7 +94,8 @@ void mainApp::createCommandBuffers() {
                          VK_SUBPASS_CONTENTS_INLINE);
 
     pipeline->bind(commandBuffers[i]);
-    vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+    model->bind(commandBuffers[i]);
+    model->draw(commandBuffers[i]);
 
     vkCmdEndRenderPass(commandBuffers[i]);
     if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {

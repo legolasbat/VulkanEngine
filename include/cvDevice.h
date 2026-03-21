@@ -35,7 +35,7 @@ public:
   cvDevice(const cvDevice &) = delete;
   void operator=(const cvDevice &) = delete;
   cvDevice(cvDevice &&) = delete;
-  cvDevice &operator=(const cvDevice &&) = delete;
+  cvDevice &operator=(cvDevice &&) = delete;
 
   VkCommandPool getCommandPool() { return commandPool; }
   VkDevice device() { return device_; }

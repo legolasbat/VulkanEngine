@@ -1,9 +1,11 @@
 #pragma once
 
 #include "cvDevice.h"
+#include "cvModel.h"
 #include "cvPipeline.h"
 #include "cvSwapChain.h"
 #include "cvWindow.h"
+
 #include <memory>
 
 namespace CV {
@@ -17,11 +19,12 @@ public:
   ~mainApp();
 
   mainApp(const mainApp &) = delete;
-  mainApp operator=(const mainApp &) = delete;
+  mainApp &operator=(const mainApp &) = delete;
 
   void run();
 
 private:
+  void loadModels();
   void createPipelineLayout();
   void createPipeline();
   void createCommandBuffers();
@@ -33,6 +36,7 @@ private:
   std::unique_ptr<cvPipeline> pipeline;
   VkPipelineLayout pipelineLayout;
   std::vector<VkCommandBuffer> commandBuffers;
+  std::unique_ptr<cvModel> model;
 };
 
 } // namespace CV

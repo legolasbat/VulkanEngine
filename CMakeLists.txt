@@ -8,6 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 add_subdirectory(vendors/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(vendors/glm)
 
 include_directories(${CMAKE_SOURCE_DIR}/vendors/imgui)
 
@@ -34,4 +35,4 @@ target_include_directories(${PROJECT_NAME}
 find_package(Vulkan REQUIRED)
 
 # Link to the actual SDL3 library.
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 Vulkan::Vulkan)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 glm::glm Vulkan::Vulkan)
