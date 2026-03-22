@@ -29,10 +29,12 @@ private:
   void createPipeline();
   void createCommandBuffers();
   void drawFrame();
+  void recreateSwapChain();
+  void recordCommandBuffer(int imageIndex);
 
   cvWindow window{WIDTH, HEIGHT, "Main App"};
   cvDevice device{window};
-  cvSwapChain swapChain{device, window.getExtent()};
+  std::unique_ptr<cvSwapChain> swapChain;
   std::unique_ptr<cvPipeline> pipeline;
   VkPipelineLayout pipelineLayout;
   std::vector<VkCommandBuffer> commandBuffers;

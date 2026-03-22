@@ -31,7 +31,7 @@ void cvWindow::pollEvents() {
   SDL_Event event;
 
   while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_KEY_DOWN)
+    if (event.type == SDL_EVENT_QUIT)
       isOpen = false;
   }
 }

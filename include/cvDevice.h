@@ -33,7 +33,7 @@ public:
 
   // Not copyable or movable
   cvDevice(const cvDevice &) = delete;
-  void operator=(const cvDevice &) = delete;
+  cvDevice &operator=(const cvDevice &) = delete;
   cvDevice(cvDevice &&) = delete;
   cvDevice &operator=(cvDevice &&) = delete;
 

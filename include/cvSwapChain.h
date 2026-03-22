@@ -12,7 +12,7 @@ public:
   ~cvSwapChain();
 
   cvSwapChain(const cvSwapChain &) = delete;
-  void operator=(const cvSwapChain &) = delete;
+  cvSwapChain &operator=(const cvSwapChain &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) {
     return swapChainFramebuffers[index];
