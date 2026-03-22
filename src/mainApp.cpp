@@ -46,8 +46,12 @@ void mainApp::createPipelineLayout() {
 }
 
 void mainApp::createPipeline() {
-  auto pipelineConfig = cvPipeline::defaultPipelineConfigInfo(
-      swapChain->width(), swapChain->height());
+  assert(swapChain != nullptr && "Cannot create pipeline before swap chain");
+  assert(pipelineLayout != nullptr &&
+         "Cannot create pipeline before pipeline layout");
+
+  PipelineConfigInfo pipelineConfig{};
+  cvPipeline::defaultPipelineConfigInfo(pipelineConfig);
   pipelineConfig.renderPass = swapChain->getRenderPass();
   pipelineConfig.pipelineLayout = pipelineLayout;
   pipeline = std::make_unique<cvPipeline>(
@@ -64,7 +68,18 @@ void mainApp::recreateSwapChain() {
   }
 
   vkDeviceWaitIdle(device.device());
-  swapChain = std::make_unique<cvSwapChain>(device, extent);
+
+  if (swapChain == nullptr) {
+    swapChain = std::make_unique<cvSwapChain>(device, extent);
+  } else {
+    swapChain =
+        std::make_unique<cvSwapChain>(device, extent, std::move(swapChain));
+    if (swapChain->imageCount() != commandBuffers.size()) {
+      freeCommandBuffers();
+      createCommandBuffers();
+    }
+  }
+
   createPipeline();
 }
 
@@ -81,6 +96,13 @@ void mainApp::createCommandBuffers() {
                                commandBuffers.data()) != VK_SUCCESS) {
     throw std::runtime_error("Failed to allocate command buffers!");
   }
+}
+
+void mainApp::freeCommandBuffers() {
+  vkFreeCommandBuffers(device.device(), device.getCommandPool(),
+                       static_cast<uint32_t>(commandBuffers.size()),
+                       commandBuffers.data());
+  commandBuffers.clear();
 }
 
 void mainApp::recordCommandBuffer(int imageIndex) {
@@ -108,6 +130,17 @@ void mainApp::recordCommandBuffer(int imageIndex) {
 
   vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo,
                        VK_SUBPASS_CONTENTS_INLINE);
+
+  VkViewport viewport{};
+  viewport.x = 0.0f;
+  viewport.y = 0.0f;
+  viewport.width = static_cast<float>(swapChain->getSwapChainExtent().width);
+  viewport.height = static_cast<float>(swapChain->getSwapChainExtent().height);
+  viewport.minDepth = 0.0f;
+  viewport.maxDepth = 1.0f;
+  VkRect2D scissor{{0, 0}, swapChain->getSwapChainExtent()};
+  vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+  vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
 
   pipeline->bind(commandBuffers[imageIndex]);
   model->bind(commandBuffers[imageIndex]);

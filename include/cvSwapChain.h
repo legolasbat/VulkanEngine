@@ -2,6 +2,8 @@
 
 #include "cvDevice.h"
 
+#include <memory>
+
 namespace CV {
 
 class cvSwapChain {
@@ -9,6 +11,8 @@ public:
   static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
   cvSwapChain(cvDevice &device, VkExtent2D windowExtend);
+  cvSwapChain(cvDevice &device, VkExtent2D windowExtend,
+              std::shared_ptr<cvSwapChain> previous);
   ~cvSwapChain();
 
   cvSwapChain(const cvSwapChain &) = delete;
@@ -36,6 +40,7 @@ public:
                                 uint32_t *imageIndex);
 
 private:
+  void init();
   void createSwapChain();
   void createImageViews();
   void createDepthResources();
@@ -66,6 +71,7 @@ private:
   VkExtent2D windowExtent;
 
   VkSwapchainKHR swapChain;
+  std::shared_ptr<cvSwapChain> oldSwapChain;
 
   std::vector<VkSemaphore> imageAvailableSemaphores;
   std::vector<VkSemaphore> renderFinishedSemaphores;

@@ -8,6 +8,19 @@ namespace CV {
 
 cvSwapChain::cvSwapChain(cvDevice &device, VkExtent2D windowExtend)
     : device(device), windowExtent(windowExtend) {
+  init();
+}
+
+cvSwapChain::cvSwapChain(cvDevice &device, VkExtent2D windowExtend,
+                         std::shared_ptr<cvSwapChain> previous)
+    : device(device), windowExtent(windowExtend), oldSwapChain(previous) {
+  init();
+
+  // Clean up old swap chain since it's no longer needed
+  oldSwapChain = nullptr;
+}
+
+void cvSwapChain::init() {
   createSwapChain();
   createImageViews();
   createRenderPass();
@@ -154,7 +167,8 @@ void cvSwapChain::createSwapChain() {
   createInfo.presentMode = presentMode;
   createInfo.clipped = VK_TRUE;
 
-  createInfo.oldSwapchain = VK_NULL_HANDLE;
+  createInfo.oldSwapchain =
+      oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
   if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) !=
       VK_SUCCESS) {
