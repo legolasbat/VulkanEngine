@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cvDevice.h"
-#include "cvModel.h"
+#include "cvGameObject.h"
 #include "cvPipeline.h"
 #include "cvSwapChain.h"
 #include "cvWindow.h"
@@ -24,7 +24,7 @@ public:
   void run();
 
 private:
-  void loadModels();
+  void loadGameObjects();
   void createPipelineLayout();
   void createPipeline();
   void createCommandBuffers();
@@ -32,6 +32,7 @@ private:
   void drawFrame();
   void recreateSwapChain();
   void recordCommandBuffer(int imageIndex);
+  void renderGameObjects(VkCommandBuffer commandBuffer);
 
   cvWindow window{WIDTH, HEIGHT, "Main App"};
   cvDevice device{window};
@@ -39,7 +40,7 @@ private:
   std::unique_ptr<cvPipeline> pipeline;
   VkPipelineLayout pipelineLayout;
   std::vector<VkCommandBuffer> commandBuffers;
-  std::unique_ptr<cvModel> model;
+  std::vector<cvGameObject> gameObjects;
 };
 
 } // namespace CV
