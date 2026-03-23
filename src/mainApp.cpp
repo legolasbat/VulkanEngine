@@ -30,21 +30,68 @@ void mainApp::run() {
 
   vkDeviceWaitIdle(device.device());
 }
+
+std::unique_ptr<cvModel> createCubeModel(cvDevice &device, glm::vec3 offset) {
+  std::vector<cvModel::Vertex> vertices{
+      // Left face (white)
+      {{-0.5f, -0.5f, -0.5f}, {0.9f, 0.9f, 0.9f}},
+      {{-0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 0.9f}},
+      {{-0.5f, -0.5f, 0.5f}, {0.9f, 0.9f, 0.9f}},
+      {{-0.5f, -0.5f, -0.5f}, {0.9f, 0.9f, 0.9f}},
+      {{-0.5f, 0.5f, -0.5f}, {0.9f, 0.9f, 0.9f}},
+      {{-0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 0.9f}},
+      // Right face (yellow)
+      {{0.5f, -0.5f, -0.5f}, {0.8f, 0.8f, 0.1f}},
+      {{0.5f, 0.5f, 0.5f}, {0.8f, 0.8f, 0.1f}},
+      {{0.5f, -0.5f, 0.5f}, {0.8f, 0.8f, 0.1f}},
+      {{0.5f, -0.5f, -0.5f}, {0.8f, 0.8f, 0.1f}},
+      {{0.5f, 0.5f, -0.5f}, {0.8f, 0.8f, 0.1f}},
+      {{0.5f, 0.5f, 0.5f}, {0.8f, 0.8f, 0.1f}},
+      // Top face (orange)
+      {{-0.5f, -0.5f, -0.5f}, {0.9f, 0.6f, 0.1f}},
+      {{0.5f, -0.5f, 0.5f}, {0.9f, 0.6f, 0.1f}},
+      {{-0.5f, -0.5f, 0.5f}, {0.9f, 0.6f, 0.1f}},
+      {{-0.5f, -0.5f, -0.5f}, {0.9f, 0.6f, 0.1f}},
+      {{0.5f, -0.5f, -0.5f}, {0.9f, 0.6f, 0.1f}},
+      {{0.5f, -0.5f, 0.5f}, {0.9f, 0.6f, 0.1f}},
+      // Bottom face (red)
+      {{-0.5f, 0.5f, -0.5f}, {0.8f, 0.1f, 0.1f}},
+      {{0.5f, 0.5f, 0.5f}, {0.8f, 0.1f, 0.1f}},
+      {{-0.5f, 0.5f, 0.5f}, {0.8f, 0.1f, 0.1f}},
+      {{-0.5f, 0.5f, -0.5f}, {0.8f, 0.1f, 0.1f}},
+      {{0.5f, 0.5f, -0.5f}, {0.8f, 0.1f, 0.1f}},
+      {{0.5f, 0.5f, 0.5f}, {0.8f, 0.1f, 0.1f}},
+      // Front face (blue)
+      {{-0.5f, -0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+      {{0.5f, 0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+      {{-0.5f, 0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+      {{-0.5f, -0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+      {{0.5f, -0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+      {{0.5f, 0.5f, 0.5f}, {0.1f, 0.1f, 0.8f}},
+      // Back face (green)
+      {{-0.5f, -0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+      {{0.5f, 0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+      {{-0.5f, 0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+      {{-0.5f, -0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+      {{0.5f, -0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+      {{0.5f, 0.5f, -0.5f}, {0.1f, 0.8f, 0.1f}},
+  };
+
+  for (auto &v : vertices) {
+    v.position += offset;
+  }
+
+  return std::make_unique<cvModel>(device, vertices);
+}
+
 void mainApp::loadGameObjects() {
-  std::vector<cvModel::Vertex> vertices{{{0.0f, -0.5}, {1.0f, 0.0f, 0.0f}},
-                                        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-                                        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
+  std::shared_ptr<cvModel> model = createCubeModel(device, {0.0f, 0.0f, 0.0f});
 
-  auto model = std::make_shared<cvModel>(device, vertices);
-
-  auto triangle = cvGameObject::createGameObject();
-  triangle.model = model;
-  triangle.color = {0.1f, 0.8f, 0.1f};
-  triangle.transform2d.translation.x = 0.2f;
-  triangle.transform2d.scale = {2.0f, 0.5f};
-  triangle.transform2d.rotation = 0.25f * glm::two_pi<float>();
-
-  gameObjects.push_back(std::move(triangle));
+  auto cube = cvGameObject::createGameObject();
+  cube.model = model;
+  cube.transform.translation = {0.0f, 0.0f, 0.5f};
+  cube.transform.scale = {0.5f, 0.5f, 0.5f};
+  gameObjects.push_back(std::move(cube));
 }
 
 } // namespace CV
