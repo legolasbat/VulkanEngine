@@ -294,6 +294,7 @@ void cvSwapChain::createFramebuffers() {
 
 void cvSwapChain::createDepthResources() {
   VkFormat depthFormat = findDepthFormat();
+  swapChainDepthFormat = depthFormat;
   VkExtent2D swapChainExtent = getSwapChainExtent();
 
   depthImages.resize(imageCount());

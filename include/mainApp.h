@@ -2,11 +2,8 @@
 
 #include "cvDevice.h"
 #include "cvGameObject.h"
-#include "cvPipeline.h"
-#include "cvSwapChain.h"
+#include "cvRenderer.h"
 #include "cvWindow.h"
-
-#include <memory>
 
 namespace CV {
 
@@ -25,21 +22,11 @@ public:
 
 private:
   void loadGameObjects();
-  void createPipelineLayout();
-  void createPipeline();
-  void createCommandBuffers();
-  void freeCommandBuffers();
-  void drawFrame();
-  void recreateSwapChain();
-  void recordCommandBuffer(int imageIndex);
-  void renderGameObjects(VkCommandBuffer commandBuffer);
 
   cvWindow window{WIDTH, HEIGHT, "Main App"};
   cvDevice device{window};
-  std::unique_ptr<cvSwapChain> swapChain;
-  std::unique_ptr<cvPipeline> pipeline;
-  VkPipelineLayout pipelineLayout;
-  std::vector<VkCommandBuffer> commandBuffers;
+  cvRenderer renderer{window, device};
+
   std::vector<cvGameObject> gameObjects;
 };
 
