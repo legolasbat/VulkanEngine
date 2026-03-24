@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cvDevice.h"
+#include "cvInputSystem.h"
 #include "cvSwapChain.h"
 #include "cvWindow.h"
 
@@ -11,7 +12,7 @@ namespace CV {
 
 class cvRenderer {
 public:
-  cvRenderer(cvWindow &window, cvDevice &device);
+  cvRenderer(cvWindow &window, cvDevice &device, cvInputSystem &input);
   ~cvRenderer();
 
   cvRenderer(const cvRenderer &) = delete;
@@ -48,6 +49,7 @@ private:
 
   cvWindow &window;
   cvDevice &device;
+  cvInputSystem &input;
   std::unique_ptr<cvSwapChain> swapChain;
   std::vector<VkCommandBuffer> commandBuffers;
 

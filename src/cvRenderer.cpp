@@ -5,8 +5,8 @@
 
 namespace CV {
 
-cvRenderer::cvRenderer(cvWindow &window, cvDevice &device)
-    : window(window), device(device), isFrameStarted(false),
+cvRenderer::cvRenderer(cvWindow &window, cvDevice &device, cvInputSystem &input)
+    : window(window), device(device), input(input), isFrameStarted(false),
       currentFrameIndex(0) {
   recreateSwapChain();
   createCommandBuffers();
@@ -18,8 +18,7 @@ void cvRenderer::recreateSwapChain() {
   auto extent = window.getExtent();
   while (extent.width == 0 || extent.height == 0) {
     extent = window.getExtent();
-    SDL_Event event;
-    SDL_WaitEvent(&event);
+    input.pollEvents();
   }
 
   vkDeviceWaitIdle(device.device());

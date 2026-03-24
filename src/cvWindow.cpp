@@ -27,15 +27,6 @@ void cvWindow::initWindow() {
   }
 }
 
-void cvWindow::pollEvents() {
-  SDL_Event event;
-
-  while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_EVENT_QUIT)
-      isOpen = false;
-  }
-}
-
 void cvWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {
   if (!SDL_Vulkan_CreateSurface(window, instance, nullptr, surface)) {
     SDL_Log("Couldn't create surface: %s\n", SDL_GetError());
@@ -47,4 +38,5 @@ cvWindow::~cvWindow() {
   SDL_DestroyWindow(window);
   SDL_Quit();
 }
+
 } // namespace CV

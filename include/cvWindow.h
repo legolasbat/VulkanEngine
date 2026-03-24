@@ -20,13 +20,14 @@ public:
 
   bool shouldClose() { return !isOpen; };
 
-  void pollEvents();
+  void setQuit(bool shouldQuit) { isOpen = !shouldQuit; }
 
   VkExtent2D getExtent() {
     return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
   }
   bool wasWindowResized() { return framebufferResized; }
   void resetWindowResizedFlag() { framebufferResized = false; }
+  SDL_Window *getSdlWindow() const { return window; }
 
   void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 

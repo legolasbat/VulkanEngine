@@ -2,6 +2,7 @@
 
 #include "cvDevice.h"
 #include "cvGameObject.h"
+#include "cvInputSystem.h"
 #include "cvRenderer.h"
 #include "cvWindow.h"
 
@@ -25,7 +26,8 @@ private:
 
   cvWindow window{WIDTH, HEIGHT, "Main App"};
   cvDevice device{window};
-  cvRenderer renderer{window, device};
+  cvInputSystem input{};
+  cvRenderer renderer{window, device, input};
 
   std::vector<cvGameObject> gameObjects;
 };
