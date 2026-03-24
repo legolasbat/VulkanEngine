@@ -11,6 +11,7 @@ add_subdirectory(vendors/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendors/glm)
 
 include_directories(${CMAKE_SOURCE_DIR}/vendors/imgui)
+include_directories(${CMAKE_SOURCE_DIR}/vendors/tinyobjloader)
 
 file(GLOB SOURCES "src/*.cpp")
 
