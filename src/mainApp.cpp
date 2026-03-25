@@ -61,13 +61,21 @@ void mainApp::run() {
 
 void mainApp::loadGameObjects() {
   std::shared_ptr<cvModel> model =
-      cvModel::createModelFromFile(device, "resources/models/smooth_vase.obj");
+      cvModel::createModelFromFile(device, "resources/models/flat_vase.obj");
 
-  auto gameObj = cvGameObject::createGameObject();
-  gameObj.model = model;
-  gameObj.transform.translation = {0.0f, 0.0f, 2.5f};
-  gameObj.transform.scale = glm::vec3(3.0f);
-  gameObjects.push_back(std::move(gameObj));
+  auto flatVase = cvGameObject::createGameObject();
+  flatVase.model = model;
+  flatVase.transform.translation = {-0.5f, 0.5f, 2.5f};
+  flatVase.transform.scale = glm::vec3(3.0f, 1.5f, 3.0f);
+  gameObjects.push_back(std::move(flatVase));
+
+  model =
+      cvModel::createModelFromFile(device, "resources/models/smooth_vase.obj");
+  auto smoothVase = cvGameObject::createGameObject();
+  smoothVase.model = model;
+  smoothVase.transform.translation = {0.5f, 0.5f, 2.5f};
+  smoothVase.transform.scale = glm::vec3(3.0f, 1.5f, 3.0f);
+  gameObjects.push_back(std::move(smoothVase));
 }
 
 } // namespace CV
