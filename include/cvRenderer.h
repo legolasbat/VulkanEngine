@@ -34,7 +34,7 @@ public:
   int getFrameIndex() const {
     assert(isFrameStarted &&
            "Cannot get frame index when frame not in progress");
-    return currentImageIndex;
+    return currentFrameIndex;
   }
 
   VkCommandBuffer beginFrame();

@@ -23,14 +23,14 @@ mainApp::mainApp() { loadGameObjects(); }
 mainApp::~mainApp() {}
 
 void mainApp::run() {
-  cvBuffer globalUboBuffer{
-      device,
-      sizeof(GlobalUbo),
-      cvSwapChain::MAX_FRAMES_IN_FLIGHT,
-      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-      device.properties.limits.minUniformBufferOffsetAlignment};
-  globalUboBuffer.map();
+  std::vector<std::unique_ptr<cvBuffer>> uboBuffers(
+      cvSwapChain::MAX_FRAMES_IN_FLIGHT);
+  for (int i = 0; i < uboBuffers.size(); i++) {
+    uboBuffers[i] = std::make_unique<cvBuffer>(
+        device, sizeof(GlobalUbo), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    uboBuffers[i]->map();
+  }
 
   SimpleRenderSystem simpleRenderSystem(device,
                                         renderer.getSwapChainRenderPass());
@@ -69,8 +69,8 @@ void mainApp::run() {
       // Update
       GlobalUbo ubo{};
       ubo.projectionView = camera.getProjection() * camera.getView();
-      globalUboBuffer.writeToIndex(&ubo, frameIndex);
-      globalUboBuffer.flushIndex(frameIndex);
+      uboBuffers[frameIndex]->writeToBuffer(&ubo);
+      uboBuffers[frameIndex]->flush();
 
       // Render
       renderer.beginSwapChainRenderPass(commandBuffer);
