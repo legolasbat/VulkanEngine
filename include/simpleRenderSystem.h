@@ -1,7 +1,7 @@
 #pragma once
 
-#include "cvCamera.h"
 #include "cvDevice.h"
+#include "cvFrameInfo.h"
 #include "cvGameObject.h"
 #include "cvPipeline.h"
 
@@ -17,9 +17,8 @@ public:
   SimpleRenderSystem(const SimpleRenderSystem &) = delete;
   SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
 
-  void renderGameObjects(VkCommandBuffer commandBuffer,
-                         std::vector<cvGameObject> &gameObjects,
-                         const cvCamera &camera);
+  void renderGameObjects(FrameInfo &frameInfo,
+                         std::vector<cvGameObject> &gameObjects);
 
 private:
   void createPipelineLayout();

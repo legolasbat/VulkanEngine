@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cvBuffer.h"
 #include "cvDevice.h"
 
 #define GLM_FORCE_RADIANS
@@ -54,13 +55,11 @@ private:
 
   cvDevice &device;
 
-  VkBuffer vertexBuffer;
-  VkDeviceMemory vertexBufferMemory;
+  std::unique_ptr<cvBuffer> vertexBuffer;
   uint32_t vertexCount;
 
   bool hasIndexBuffer = false;
-  VkBuffer indexBuffer;
-  VkDeviceMemory indexBufferMemory;
+  std::unique_ptr<cvBuffer> indexBuffer;
   uint32_t indexCount;
 };
 

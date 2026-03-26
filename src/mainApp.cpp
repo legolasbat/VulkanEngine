@@ -13,11 +13,25 @@
 
 namespace CV {
 
+struct GlobalUbo {
+  glm::mat4 projectionView{1.0f};
+  glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
+};
+
 mainApp::mainApp() { loadGameObjects(); }
 
 mainApp::~mainApp() {}
 
 void mainApp::run() {
+  cvBuffer globalUboBuffer{
+      device,
+      sizeof(GlobalUbo),
+      cvSwapChain::MAX_FRAMES_IN_FLIGHT,
+      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+      device.properties.limits.minUniformBufferOffsetAlignment};
+  globalUboBuffer.map();
+
   SimpleRenderSystem simpleRenderSystem(device,
                                         renderer.getSwapChainRenderPass());
   cvCamera camera{};
@@ -49,8 +63,18 @@ void mainApp::run() {
     camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
 
     if (auto commandBuffer = renderer.beginFrame()) {
+      int frameIndex = renderer.getFrameIndex();
+      FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera};
+
+      // Update
+      GlobalUbo ubo{};
+      ubo.projectionView = camera.getProjection() * camera.getView();
+      globalUboBuffer.writeToIndex(&ubo, frameIndex);
+      globalUboBuffer.flushIndex(frameIndex);
+
+      // Render
       renderer.beginSwapChainRenderPass(commandBuffer);
-      simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
+      simpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
       renderer.endSwapChainRenderPass(commandBuffer);
       renderer.endFrame();
     }
