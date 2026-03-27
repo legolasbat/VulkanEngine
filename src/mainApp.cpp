@@ -18,7 +18,15 @@ struct GlobalUbo {
   glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
 };
 
-mainApp::mainApp() { loadGameObjects(); }
+mainApp::mainApp() {
+  globalPool = cvDescriptorPool::Builder(device)
+                   .setMaxSets(cvSwapChain::MAX_FRAMES_IN_FLIGHT)
+                   .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                                cvSwapChain::MAX_FRAMES_IN_FLIGHT)
+                   .build();
+
+  loadGameObjects();
+}
 
 mainApp::~mainApp() {}
 
@@ -32,8 +40,23 @@ void mainApp::run() {
     uboBuffers[i]->map();
   }
 
-  SimpleRenderSystem simpleRenderSystem(device,
-                                        renderer.getSwapChainRenderPass());
+  auto globalSetLayout = cvDescriptorSetLayout::Builder(device)
+                             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                                         VK_SHADER_STAGE_VERTEX_BIT)
+                             .build();
+
+  std::vector<VkDescriptorSet> globalDescriptorSets(
+      cvSwapChain::MAX_FRAMES_IN_FLIGHT);
+  for (int i = 0; i < globalDescriptorSets.size(); i++) {
+    auto bufferInfo = uboBuffers[i]->descriptorInfo();
+    cvDescriptorWriter(*globalSetLayout, *globalPool)
+        .writeBuffer(0, &bufferInfo)
+        .build(globalDescriptorSets[i]);
+  }
+
+  SimpleRenderSystem simpleRenderSystem(
+      device, renderer.getSwapChainRenderPass(),
+      globalSetLayout->getDescriptorSetLayout());
   cvCamera camera{};
   camera.setViewTarget(glm::vec3(-1.0f, -2.0f, 2.0f),
                        glm::vec3(0.0f, 0.0f, 2.5f));
@@ -64,7 +87,8 @@ void mainApp::run() {
 
     if (auto commandBuffer = renderer.beginFrame()) {
       int frameIndex = renderer.getFrameIndex();
-      FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera};
+      FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera,
+                          globalDescriptorSets[frameIndex]};
 
       // Update
       GlobalUbo ubo{};

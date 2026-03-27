@@ -11,6 +11,7 @@ struct FrameInfo {
   float frameTime;
   VkCommandBuffer commandBuffer;
   cvCamera &camera;
+  VkDescriptorSet globalDescriptorSet;
 };
 
 } // namespace CV

@@ -11,7 +11,8 @@ namespace CV {
 
 class SimpleRenderSystem {
 public:
-  SimpleRenderSystem(cvDevice &device, VkRenderPass renderPass);
+  SimpleRenderSystem(cvDevice &device, VkRenderPass renderPass,
+                     VkDescriptorSetLayout globalSetLayout);
   ~SimpleRenderSystem();
 
   SimpleRenderSystem(const SimpleRenderSystem &) = delete;
@@ -21,7 +22,7 @@ public:
                          std::vector<cvGameObject> &gameObjects);
 
 private:
-  void createPipelineLayout();
+  void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
   void createPipeline(VkRenderPass renderPass);
 
   cvDevice &device;

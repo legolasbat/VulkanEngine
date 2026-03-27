@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cvDescriptors.h"
 #include "cvDevice.h"
 #include "cvGameObject.h"
 #include "cvInputSystem.h"
@@ -29,6 +30,8 @@ private:
   cvInputSystem input{};
   cvRenderer renderer{window, device, input};
 
+  // Note: Order of declarations matters
+  std::unique_ptr<cvDescriptorPool> globalPool{};
   std::vector<cvGameObject> gameObjects;
 };
 
