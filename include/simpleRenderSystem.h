@@ -2,7 +2,6 @@
 
 #include "cvDevice.h"
 #include "cvFrameInfo.h"
-#include "cvGameObject.h"
 #include "cvPipeline.h"
 
 #include <memory>
@@ -18,8 +17,7 @@ public:
   SimpleRenderSystem(const SimpleRenderSystem &) = delete;
   SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
 
-  void renderGameObjects(FrameInfo &frameInfo,
-                         std::vector<cvGameObject> &gameObjects);
+  void renderGameObjects(FrameInfo &frameInfo);
 
 private:
   void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);

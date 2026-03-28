@@ -44,7 +44,7 @@ void mainApp::run() {
 
   auto globalSetLayout = cvDescriptorSetLayout::Builder(device)
                              .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                                         VK_SHADER_STAGE_VERTEX_BIT)
+                                         VK_SHADER_STAGE_ALL_GRAPHICS)
                              .build();
 
   std::vector<VkDescriptorSet> globalDescriptorSets(
@@ -90,8 +90,12 @@ void mainApp::run() {
 
     if (auto commandBuffer = renderer.beginFrame()) {
       int frameIndex = renderer.getFrameIndex();
-      FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera,
-                          globalDescriptorSets[frameIndex]};
+      FrameInfo frameInfo{frameIndex,
+                          frameTime,
+                          commandBuffer,
+                          camera,
+                          globalDescriptorSets[frameIndex],
+                          gameObjects};
 
       // Update
       GlobalUbo ubo{};
@@ -101,7 +105,7 @@ void mainApp::run() {
 
       // Render
       renderer.beginSwapChainRenderPass(commandBuffer);
-      simpleRenderSystem.renderGameObjects(frameInfo, gameObjects);
+      simpleRenderSystem.renderGameObjects(frameInfo);
       renderer.endSwapChainRenderPass(commandBuffer);
       renderer.endFrame();
     }
@@ -118,7 +122,7 @@ void mainApp::loadGameObjects() {
   flatVase.model = model;
   flatVase.transform.translation = {-0.5f, 0.5f, 0.0f};
   flatVase.transform.scale = glm::vec3(3.0f, 1.5f, 3.0f);
-  gameObjects.push_back(std::move(flatVase));
+  gameObjects.emplace(flatVase.getId(), std::move(flatVase));
 
   model =
       cvModel::createModelFromFile(device, "resources/models/smooth_vase.obj");
@@ -126,14 +130,14 @@ void mainApp::loadGameObjects() {
   smoothVase.model = model;
   smoothVase.transform.translation = {0.5f, 0.5f, 0.0f};
   smoothVase.transform.scale = glm::vec3(3.0f, 1.5f, 3.0f);
-  gameObjects.push_back(std::move(smoothVase));
+  gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
 
   model = cvModel::createModelFromFile(device, "resources/models/quad.obj");
   auto quad = cvGameObject::createGameObject();
   quad.model = model;
   quad.transform.translation = {0.0f, 0.5f, 0.0f};
   quad.transform.scale = glm::vec3(3.0f, 1.0f, 3.0f);
-  gameObjects.push_back(std::move(quad));
+  gameObjects.emplace(quad.getId(), std::move(quad));
 }
 
 } // namespace CV

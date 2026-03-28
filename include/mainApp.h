@@ -32,7 +32,7 @@ private:
 
   // Note: Order of declarations matters
   std::unique_ptr<cvDescriptorPool> globalPool{};
-  std::vector<cvGameObject> gameObjects;
+  cvGameObject::Map gameObjects;
 };
 
 } // namespace CV
