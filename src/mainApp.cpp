@@ -15,7 +15,9 @@ namespace CV {
 
 struct GlobalUbo {
   glm::mat4 projectionView{1.0f};
-  glm::vec3 lightDirection = glm::normalize(glm::vec3{1.0f, -3.0f, -1.0f});
+  glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f}; // W is intensity
+  glm::vec3 lightPosition{-1.0f};
+  alignas(16) glm::vec4 lightColor{1.0f}; // W is light intensity
 };
 
 mainApp::mainApp() {
@@ -62,6 +64,7 @@ void mainApp::run() {
                        glm::vec3(0.0f, 0.0f, 2.5f));
 
   auto viewerObject = cvGameObject::createGameObject();
+  viewerObject.transform.translation.z = -2.5f;
   KeyboardMovementController cameraController{input};
 
   auto currentTime = std::chrono::high_resolution_clock::now();
@@ -83,7 +86,7 @@ void mainApp::run() {
                       viewerObject.transform.rotation);
 
     float aspect = renderer.getAspectRatio();
-    camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
+    camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 100.0f);
 
     if (auto commandBuffer = renderer.beginFrame()) {
       int frameIndex = renderer.getFrameIndex();
@@ -113,7 +116,7 @@ void mainApp::loadGameObjects() {
 
   auto flatVase = cvGameObject::createGameObject();
   flatVase.model = model;
-  flatVase.transform.translation = {-0.5f, 0.5f, 2.5f};
+  flatVase.transform.translation = {-0.5f, 0.5f, 0.0f};
   flatVase.transform.scale = glm::vec3(3.0f, 1.5f, 3.0f);
   gameObjects.push_back(std::move(flatVase));
 
@@ -121,9 +124,16 @@ void mainApp::loadGameObjects() {
       cvModel::createModelFromFile(device, "resources/models/smooth_vase.obj");
   auto smoothVase = cvGameObject::createGameObject();
   smoothVase.model = model;
-  smoothVase.transform.translation = {0.5f, 0.5f, 2.5f};
+  smoothVase.transform.translation = {0.5f, 0.5f, 0.0f};
   smoothVase.transform.scale = glm::vec3(3.0f, 1.5f, 3.0f);
   gameObjects.push_back(std::move(smoothVase));
+
+  model = cvModel::createModelFromFile(device, "resources/models/quad.obj");
+  auto quad = cvGameObject::createGameObject();
+  quad.model = model;
+  quad.transform.translation = {0.0f, 0.5f, 0.0f};
+  quad.transform.scale = glm::vec3(3.0f, 1.0f, 3.0f);
+  gameObjects.push_back(std::move(quad));
 }
 
 } // namespace CV
