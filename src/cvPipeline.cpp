@@ -61,8 +61,8 @@ void cvPipeline::createGraphicsPipeline(const std::string &vertFilepath,
   shaderStages[1].pNext = nullptr;
   shaderStages[1].pSpecializationInfo = nullptr;
 
-  auto bindingDescriptions = cvModel::Vertex::getBindingDescriptions();
-  auto attributeDescriptions = cvModel::Vertex::getAttributeDescriptions();
+  auto &bindingDescriptions = configInfo.bindingDescriptions;
+  auto &attributeDescriptions = configInfo.attributeDescriptions;
   VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
   vertexInputInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -197,6 +197,10 @@ void cvPipeline::defaultPipelineConfigInfo(PipelineConfigInfo &configInfo) {
   configInfo.dynamicStateInfo.dynamicStateCount =
       static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
   configInfo.dynamicStateInfo.flags = 0;
+
+  configInfo.bindingDescriptions = cvModel::Vertex::getBindingDescriptions();
+  configInfo.attributeDescriptions =
+      cvModel::Vertex::getAttributeDescriptions();
 }
 
 } // namespace CV

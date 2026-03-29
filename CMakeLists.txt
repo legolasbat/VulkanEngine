@@ -13,7 +13,7 @@ add_subdirectory(vendors/glm)
 include_directories(${CMAKE_SOURCE_DIR}/vendors/imgui)
 include_directories(${CMAKE_SOURCE_DIR}/vendors/tinyobjloader)
 
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 file(GLOB IMGUI_SOURCES
 	vendors/imgui/imgui.cpp

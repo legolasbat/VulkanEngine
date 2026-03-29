@@ -2,7 +2,8 @@
 
 #include "cvCamera.h"
 #include "keyboardMovementController.h"
-#include "simpleRenderSystem.h"
+#include "systems/pointLightSystem.h"
+#include "systems/simpleRenderSystem.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -14,7 +15,8 @@
 namespace CV {
 
 struct GlobalUbo {
-  glm::mat4 projectionView{1.0f};
+  glm::mat4 projection{1.0f};
+  glm::mat4 view{1.0f};
   glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f}; // W is intensity
   glm::vec3 lightPosition{-1.0f};
   alignas(16) glm::vec4 lightColor{1.0f}; // W is light intensity
@@ -59,6 +61,9 @@ void mainApp::run() {
   SimpleRenderSystem simpleRenderSystem(
       device, renderer.getSwapChainRenderPass(),
       globalSetLayout->getDescriptorSetLayout());
+  PointLightSystem pointLightSystem(device, renderer.getSwapChainRenderPass(),
+                                    globalSetLayout->getDescriptorSetLayout());
+
   cvCamera camera{};
   camera.setViewTarget(glm::vec3(-1.0f, -2.0f, 2.0f),
                        glm::vec3(0.0f, 0.0f, 2.5f));
@@ -99,13 +104,15 @@ void mainApp::run() {
 
       // Update
       GlobalUbo ubo{};
-      ubo.projectionView = camera.getProjection() * camera.getView();
+      ubo.projection = camera.getProjection();
+      ubo.view = camera.getView();
       uboBuffers[frameIndex]->writeToBuffer(&ubo);
       uboBuffers[frameIndex]->flush();
 
       // Render
       renderer.beginSwapChainRenderPass(commandBuffer);
       simpleRenderSystem.renderGameObjects(frameInfo);
+      pointLightSystem.render(frameInfo);
       renderer.endSwapChainRenderPass(commandBuffer);
       renderer.endFrame();
     }
