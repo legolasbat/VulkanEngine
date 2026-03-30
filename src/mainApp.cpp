@@ -14,14 +14,6 @@
 
 namespace CV {
 
-struct GlobalUbo {
-  glm::mat4 projection{1.0f};
-  glm::mat4 view{1.0f};
-  glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.02f}; // W is intensity
-  glm::vec3 lightPosition{-1.0f};
-  alignas(16) glm::vec4 lightColor{1.0f}; // W is light intensity
-};
-
 mainApp::mainApp() {
   globalPool = cvDescriptorPool::Builder(device)
                    .setMaxSets(cvSwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -106,6 +98,7 @@ void mainApp::run() {
       GlobalUbo ubo{};
       ubo.projection = camera.getProjection();
       ubo.view = camera.getView();
+      pointLightSystem.update(frameInfo, ubo);
       uboBuffers[frameIndex]->writeToBuffer(&ubo);
       uboBuffers[frameIndex]->flush();
 
@@ -145,6 +138,21 @@ void mainApp::loadGameObjects() {
   quad.transform.translation = {0.0f, 0.5f, 0.0f};
   quad.transform.scale = glm::vec3(3.0f, 1.0f, 3.0f);
   gameObjects.emplace(quad.getId(), std::move(quad));
+
+  std::vector<glm::vec3> lightColors{{1.0f, 0.1f, 0.1f}, {0.1f, 0.1f, 1.0f},
+                                     {0.1f, 1.0f, 0.1f}, {1.0f, 1.0f, 0.1f},
+                                     {0.1f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}};
+
+  for (int i = 0; i < lightColors.size(); i++) {
+    auto pointLight = cvGameObject::makePointLight(0.2f);
+    pointLight.color = lightColors[i];
+    auto rotateLight = glm::rotate(
+        glm::mat4(1.0f), (i * glm::two_pi<float>()) / lightColors.size(),
+        {0.0f, -1.0f, 0.0f});
+    pointLight.transform.translation =
+        glm::vec3(rotateLight * glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f));
+    gameObjects.emplace(pointLight.getId(), std::move(pointLight));
+  }
 }
 
 } // namespace CV
