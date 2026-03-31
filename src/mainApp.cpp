@@ -105,8 +105,10 @@ void mainApp::run() {
 
       // Render
       renderer.beginSwapChainRenderPass(commandBuffer);
+
       simpleRenderSystem.renderGameObjects(frameInfo);
       pointLightSystem.render(frameInfo);
+
       renderer.endSwapChainRenderPass(commandBuffer);
       renderer.endFrame();
     }
